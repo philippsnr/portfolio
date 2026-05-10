@@ -384,8 +384,8 @@ function Contact() {
       </Reveal>
 
       <Reveal delay={150}>
-        <a className="contact-email" href="mailto:contact@philipp-staudinger.de">
-          <span>contact@philipp-staudinger.de</span>
+        <a className="contact-email" href="mailto:contact@philipp-staudinger.com">
+          <span>contact@philipp-staudinger.com</span>
           <span className="arrow">↗</span>
         </a>
       </Reveal>
