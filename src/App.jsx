@@ -57,17 +57,25 @@ const SKILLS = [
     { name: 'PyTorch', lvl: 'Daily', icon: 'devicon-pytorch-original' },
     { name: 'TensorFlow', lvl: 'Comfortable', icon: 'devicon-tensorflow-original' },
     { name: 'OpenCV', lvl: 'Daily', icon: 'devicon-opencv-plain' },
-    { name: 'Databricks', lvl: 'Comfortable', icon: null, iconText: 'DB' },
     { name: 'NumPy', lvl: 'Comfortable', icon: 'devicon-numpy-plain' },
     { name: 'Pandas', lvl: 'Comfortable', icon: 'devicon-pandas-plain' },
+    { name: 'Jupyter', lvl: 'Comfortable', icon: 'devicon-jupyter-plain' },
   ]},
   { cat: 'DevOps & Cloud', items: [
     { name: 'Docker', lvl: 'Daily', icon: 'devicon-docker-plain' },
     { name: 'Kubernetes', lvl: 'Comfortable', icon: 'devicon-kubernetes-plain' },
     { name: 'Rancher', lvl: 'Comfortable', icon: 'devicon-rancher-original' },
+    { name: 'OpenShift', lvl: 'Comfortable', icon: null, iconText: 'OS' },
+    { name: 'Azure DevOps', lvl: 'Comfortable', icon: 'devicon-azuredevops-plain' },
+    { name: 'GitHub Actions', lvl: 'Comfortable', icon: 'devicon-github-plain' },
+  ]},
+  { cat: 'Tools', items: [
+    { name: 'Git', lvl: 'Daily', icon: 'devicon-git-plain' },
     { name: 'Linux', lvl: 'Native', icon: 'devicon-linux-plain' },
     { name: 'Bash', lvl: 'Comfortable', icon: 'devicon-bash-plain' },
-    { name: 'GitHub Actions', lvl: 'Comfortable', icon: 'devicon-github-plain' },
+    { name: 'MySQL', lvl: 'Comfortable', icon: 'devicon-mysql-original' },
+    { name: 'Android Studio', lvl: 'Comfortable', icon: 'devicon-androidstudio-plain' },
+    { name: 'Ollama', lvl: 'Comfortable', icon: null, iconText: 'OL' },
   ]},
 ]
 
@@ -81,17 +89,28 @@ const ICON_MAP = {
   'PyTorch': 'devicon-pytorch-original',
   'TensorFlow': 'devicon-tensorflow-original',
   'OpenCV': 'devicon-opencv-plain',
-  'Databricks': null,
   'NumPy': 'devicon-numpy-plain',
   'Pandas': 'devicon-pandas-plain',
+  'Jupyter': 'devicon-jupyter-plain',
   'Docker': 'devicon-docker-plain',
   'Kubernetes': 'devicon-kubernetes-plain',
   'Rancher': 'devicon-rancher-original',
+  'OpenShift': null,
+  'Azure DevOps': 'devicon-azuredevops-plain',
+  'GitHub Actions': 'devicon-github-plain',
+  'Git': 'devicon-git-plain',
   'Linux': 'devicon-linux-plain',
   'Bash': 'devicon-bash-plain',
-  'GitHub Actions': 'devicon-github-plain',
+  'MySQL': 'devicon-mysql-original',
+  'Android Studio': 'devicon-androidstudio-plain',
+  'Ollama': null,
   'Laravel': 'devicon-laravel-plain',
   'MariaDB': 'devicon-mariadb-plain',
+}
+
+const ICON_TEXT_MAP = {
+  'OpenShift': 'OS',
+  'Ollama': 'OL',
 }
 
 
@@ -327,7 +346,7 @@ function Projects() {
 }
 
 function Skills() {
-  const tags = ['Python', 'Java', 'JavaScript', 'PHP', 'HTML', 'CSS', 'PyTorch', 'TensorFlow', 'OpenCV', 'Databricks', 'NumPy', 'Pandas', 'Docker', 'Kubernetes', 'Rancher', 'Linux', 'Bash', 'Laravel', 'MariaDB']
+  const tags = ['Python', 'Java', 'JavaScript', 'PHP', 'HTML', 'CSS', 'PyTorch', 'TensorFlow', 'OpenCV', 'NumPy', 'Pandas', 'Jupyter', 'Docker', 'Kubernetes', 'Rancher', 'OpenShift', 'Azure DevOps', 'GitHub Actions', 'Git', 'Linux', 'Bash', 'MySQL', 'Android Studio', 'Ollama', 'Laravel', 'MariaDB']
   const items = [...tags, ...tags]
   return (
     <section className="section shell" id="stack">
@@ -363,7 +382,7 @@ function Skills() {
           {items.map((t, i) => (
             <span key={i} className="pill">
               {ICON_MAP[t] && <i className={`${ICON_MAP[t]} colored`}></i>}
-              {ICON_MAP[t] === null && <span className="icon-text">DB</span>}
+              {!ICON_MAP[t] && ICON_TEXT_MAP[t] && <span className="icon-text">{ICON_TEXT_MAP[t]}</span>}
               {t}
             </span>
           ))}

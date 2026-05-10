@@ -804,7 +804,7 @@ img { display: block; max-width: 100%; }
 /* === SKILLS === */
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   border: 1px solid var(--line);
 }
@@ -823,7 +823,7 @@ img { display: block; max-width: 100%; }
   transition: background 0.4s;
 }
 .skill-cat:hover { background: var(--bg-elev); }
-.skill-cat:nth-child(3n) { border-right: 0; }
+.skill-cat:nth-child(4n) { border-right: 0; }
 .skill-cat .cat-label {
   font-family: var(--font-mono);
   font-size: 11px;
