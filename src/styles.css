@@ -852,10 +852,21 @@ img { display: block; max-width: 100%; }
 }
 .skill-cat li .sk-name { font-size: 16px; display: flex; align-items: center; gap: 8px; }
 .skill-cat li .sk-name i { font-size: 18px; flex-shrink: 0; }
+.icon-text {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  flex-shrink: 0;
+  line-height: 1;
+  width: 18px;
+  text-align: center;
+  letter-spacing: 0;
+}
 i.devicon-linux-plain.colored,
 i.devicon-bash-plain.colored,
 i.devicon-github-plain.colored,
-i.devicon-pandas-original.colored { color: var(--text) !important; }
+i.devicon-pandas-plain.colored { color: var(--text) !important; }
 .skill-cat li .lvl {
   display: none;
 }

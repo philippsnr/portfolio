@@ -57,14 +57,14 @@ const SKILLS = [
     { name: 'PyTorch', lvl: 'Daily', icon: 'devicon-pytorch-original' },
     { name: 'TensorFlow', lvl: 'Comfortable', icon: 'devicon-tensorflow-original' },
     { name: 'OpenCV', lvl: 'Daily', icon: 'devicon-opencv-plain' },
-    { name: 'Databricks', lvl: 'Comfortable', icon: 'devicon-databricks-plain' },
-    { name: 'NumPy', lvl: 'Comfortable', icon: 'devicon-numpy-original' },
-    { name: 'Pandas', lvl: 'Comfortable', icon: 'devicon-pandas-original' },
+    { name: 'Databricks', lvl: 'Comfortable', icon: null, iconText: 'DB' },
+    { name: 'NumPy', lvl: 'Comfortable', icon: 'devicon-numpy-plain' },
+    { name: 'Pandas', lvl: 'Comfortable', icon: 'devicon-pandas-plain' },
   ]},
   { cat: 'DevOps & Cloud', items: [
     { name: 'Docker', lvl: 'Daily', icon: 'devicon-docker-plain' },
     { name: 'Kubernetes', lvl: 'Comfortable', icon: 'devicon-kubernetes-plain' },
-    { name: 'Rancher', lvl: 'Comfortable', icon: 'devicon-rancher-plain' },
+    { name: 'Rancher', lvl: 'Comfortable', icon: 'devicon-rancher-original' },
     { name: 'Linux', lvl: 'Native', icon: 'devicon-linux-plain' },
     { name: 'Bash', lvl: 'Comfortable', icon: 'devicon-bash-plain' },
     { name: 'GitHub Actions', lvl: 'Comfortable', icon: 'devicon-github-plain' },
@@ -81,12 +81,12 @@ const ICON_MAP = {
   'PyTorch': 'devicon-pytorch-original',
   'TensorFlow': 'devicon-tensorflow-original',
   'OpenCV': 'devicon-opencv-plain',
-  'Databricks': 'devicon-databricks-plain',
-  'NumPy': 'devicon-numpy-original',
-  'Pandas': 'devicon-pandas-original',
+  'Databricks': null,
+  'NumPy': 'devicon-numpy-plain',
+  'Pandas': 'devicon-pandas-plain',
   'Docker': 'devicon-docker-plain',
   'Kubernetes': 'devicon-kubernetes-plain',
-  'Rancher': 'devicon-rancher-plain',
+  'Rancher': 'devicon-rancher-original',
   'Linux': 'devicon-linux-plain',
   'Bash': 'devicon-bash-plain',
   'GitHub Actions': 'devicon-github-plain',
@@ -346,6 +346,7 @@ function Skills() {
                 <li key={it.name}>
                   <span className="sk-name">
                     {it.icon && <i className={`${it.icon} colored`}></i>}
+                    {!it.icon && it.iconText && <span className="icon-text">{it.iconText}</span>}
                     {it.name}
                   </span>
                   <SkillBar level={LVL_MAP[it.lvl] || 50} />
@@ -362,6 +363,7 @@ function Skills() {
           {items.map((t, i) => (
             <span key={i} className="pill">
               {ICON_MAP[t] && <i className={`${ICON_MAP[t]} colored`}></i>}
+              {ICON_MAP[t] === null && <span className="icon-text">DB</span>}
               {t}
             </span>
           ))}
