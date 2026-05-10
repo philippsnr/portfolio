@@ -29,7 +29,7 @@ const PROJECTS = [
     role: 'Mobile / Java',
     tags: ['Java', 'Android', 'SQLite'],
     year: '2025',
-    preview: null,
+    preview: `${import.meta.env.BASE_URL}assets/preview-fitness-tracker.png`,
     link: 'https://github.com/philippsnr',
   },
   {
