@@ -9,7 +9,7 @@ const PROJECTS = [
     role: 'Backend / Cloud',
     tags: ['Laravel', 'Kubernetes', 'MariaDB'],
     year: '2023 – Now',
-    preview: '/assets/preview-manager-united.png',
+    preview: `${import.meta.env.BASE_URL}assets/preview-manager-united.png`,
     link: 'https://manager-united.de',
   },
   {
@@ -153,7 +153,7 @@ function PhotoCard() {
       <span className="corner tr"></span>
       <span className="corner bl"></span>
       <span className="corner br"></span>
-      <img src="/assets/philipp.png" alt="Philipp Staudinger" />
+      <img src={`${import.meta.env.BASE_URL}assets/philipp.png`} alt="Philipp Staudinger" />
       <div className="photo-meta">
         <span>P. STAUDINGER · 2005</span>
         <span className="accent">● 21</span>
