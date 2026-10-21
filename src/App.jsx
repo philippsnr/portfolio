@@ -53,11 +53,10 @@ const PROJECTS = [
     tags: ['Python', 'Deep Learning', 'Image Processing'],
     year: '2025–26',
     preview: null,
-    description: 'An AI vision system for the automated visual inspection of industrial pistons, built as my bachelor thesis at Rolls-Royce Solutions in Friedrichshafen.',
+    description: 'An AI vision system that uses deep learning and image processing for automated visual inspection.',
     highlights: [
-      'Bachelor thesis in the dual programme with Rolls-Royce Solutions',
-      'Deep learning and image processing for industrial quality inspection',
-      'Developed in a real production context; the code is proprietary',
+      'Deep learning and image processing for visual quality inspection',
+      'Proprietary project; the code is not public',
     ],
     stack: ['Python', 'PyTorch', 'OpenCV', 'Deep Learning'],
     links: [],
@@ -352,12 +351,14 @@ function ProjectModal({ project, onClose }) {
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    // html is the scroll container here (it has overflow-x set), so lock it rather than body
+    const root = document.documentElement
+    const prev = root.style.overflow
+    root.style.overflow = 'hidden'
     const raf = requestAnimationFrame(() => setShown(true))
     return () => {
       window.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prev
+      root.style.overflow = prev
       cancelAnimationFrame(raf)
     }
   }, [onClose])
