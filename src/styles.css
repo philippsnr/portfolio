@@ -653,6 +653,12 @@ img { display: block; max-width: 100%; }
   border-top: 1px solid var(--line);
 }
 .project-row {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
   border-bottom: 1px solid var(--line);
   padding: 36px 0;
   display: grid;
@@ -750,55 +756,6 @@ img { display: block; max-width: 100%; }
   .project-row .role { grid-column: 1 / -1; }
   .project-row .tags { grid-column: 1 / -1; }
   .project-row .year { grid-column: 1 / -1; }
-}
-
-/* Project hover preview that follows cursor */
-.project-preview {
-  position: fixed;
-  pointer-events: none;
-  width: 220px;
-  height: 360px;
-  z-index: 50;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.9);
-  transition: opacity 0.3s var(--ease-out), transform 0.4s var(--ease-out);
-  border: 1px solid var(--accent);
-  overflow: hidden;
-  background: var(--bg-elev);
-}
-.project-preview.visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-.project-preview .frame {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.project-preview .frame .ascii {
-  font-size: 9px;
-  line-height: 1.1;
-  white-space: pre;
-  color: var(--accent);
-  opacity: 0.8;
-}
-.project-preview .label {
-  position: absolute;
-  bottom: 8px; left: 12px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-@media (max-width: 900px) {
-  .project-preview { display: none; }
 }
 
 /* === SKILLS === */
@@ -1416,4 +1373,168 @@ i.devicon-pandas-plain.colored { color: var(--text) !important; }
   padding-left: 10px;
   border-left: 1px solid var(--line);
   line-height: 1.1;
+}
+
+/* === Brand logos without devicon (Vercel, Cloudways) === */
+.sk-img { width: 18px; height: 18px; flex-shrink: 0; }
+.skills-strip .track .pill .sk-img { width: 16px; height: 16px; }
+
+/* === Project detail modal === */
+.project-row .open-hint {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 0.4s var(--ease-out);
+}
+.project-row:hover .open-hint { transform: rotate(90deg); }
+.project-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: oklch(0.08 0.006 270 / 0.75);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out);
+}
+.project-modal.open { opacity: 1; }
+.pm-panel {
+  position: relative;
+  width: min(1080px, 100%);
+  max-height: calc(100vh - 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.project-modal.open .pm-panel { transform: none; }
+.pm-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 2;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+  transition: border-color 0.3s, color 0.3s, transform 0.4s var(--ease-out);
+}
+.pm-close:hover { border-color: var(--accent); color: var(--accent); transform: rotate(90deg); }
+.pm-media {
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  min-height: 0;
+}
+.pm-media img {
+  max-width: 100%;
+  max-height: calc(100vh - 120px);
+  object-fit: contain;
+  border: 1px solid var(--line);
+}
+.pm-ascii {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pm-ascii pre { font-size: 11px; line-height: 1.15; color: var(--accent); opacity: 0.8; }
+.pm-info {
+  padding: 40px 40px 36px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.pm-meta {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 48px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pm-title {
+  font-family: var(--font-sans);
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pm-title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.7em;
+  color: var(--accent);
+}
+.pm-desc { font-size: 17px; line-height: 1.55; color: var(--text); }
+.pm-highlights { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.pm-highlights li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.pm-highlights li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+.pm-stack { display: flex; flex-wrap: wrap; gap: 8px; }
+.pm-stack span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+}
+.pm-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; padding-top: 8px; }
+.pm-links .btn { padding: 14px 22px; }
+.pm-links .btn-ghost { border-color: var(--line); color: var(--muted); }
+.pm-nolink {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+@media (max-width: 800px) {
+  .project-modal { padding: 0; align-items: end; }
+  .pm-panel {
+    grid-template-columns: 1fr;
+    max-height: 92vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+  }
+  .pm-media { border-right: 0; border-bottom: 1px solid var(--line); padding: 56px 20px 20px; }
+  .pm-media img { max-height: 60vh; }
+  .pm-info { padding: 24px 20px 32px; overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-modal, .pm-panel { transition: none; }
 }

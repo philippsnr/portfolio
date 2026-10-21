@@ -1,16 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
+
+const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
 
 const PROJECTS = [
   {
     num: '01',
     name: 'Manager United',
     sub: 'Real-Time Football Manager',
-    role: 'Backend / Cloud',
-    tags: ['Laravel', 'Kubernetes', 'MariaDB'],
+    role: 'Full-Stack / Cloud',
+    tags: ['Next.js', 'Expo', 'Laravel'],
     year: '2023 – Now',
-    preview: `${import.meta.env.BASE_URL}assets/preview-manager-united.png`,
-    link: 'https://manager-united.de',
+    preview: asset('preview-manager-united.png'),
+    description: 'A real-time football manager game with one codebase and one design system for web and mobile, backed by a Laravel API and an internal ops portal.',
+    highlights: [
+      'Shared Tamagui design system across the Next.js web app and the Expo mobile app',
+      'Laravel 11 API with Filament admin, MariaDB and Redis',
+      'Turborepo monorepo with strict TypeScript, tested core logic and CI quality gates',
+      'Hosted on Vercel (web, ops) and Cloudways (backend), mobile builds via Expo EAS',
+    ],
+    stack: ['TypeScript', 'Next.js', 'Expo', 'Tamagui', 'Laravel', 'MariaDB', 'Redis', 'Vercel', 'Cloudways'],
+    links: [{ label: 'Visit manager-united.de', url: 'https://manager-united.de' }],
   },
   {
     num: '02',
@@ -19,8 +30,19 @@ const PROJECTS = [
     role: 'Web / Mobile',
     tags: ['React', 'Leaflet', 'PWA'],
     year: '2026',
-    preview: `${import.meta.env.BASE_URL}assets/preview-location-based-service.png`,
-    link: 'https://philippsnr.github.io/location-based-service/',
+    preview: asset('preview-location-based-service.png'),
+    description: 'A mobile-first map app built as a Progressive Web App. Tap anywhere on the map to learn about a place: address, Wikipedia summary, key facts, weather, air quality and elevation.',
+    highlights: [
+      'Place details from Wikipedia and Wikidata, live weather and air quality',
+      'Search and nearby points of interest: restaurants, cafés, supermarkets and more',
+      'Route planning for car, foot and bike with an elevation profile',
+      'Installable and offline-ready; runs entirely on free public APIs, no keys needed',
+    ],
+    stack: ['React', 'Vite', 'Framework7', 'MUI', 'Leaflet', 'PWA'],
+    links: [
+      { label: 'Open live demo', url: 'https://philippsnr.github.io/location-based-service/' },
+      { label: 'GitHub', url: 'https://github.com/philippsnr/location-based-service' },
+    ],
   },
   {
     num: '03',
@@ -30,7 +52,14 @@ const PROJECTS = [
     tags: ['Python', 'Deep Learning', 'Image Processing'],
     year: '2025–26',
     preview: null,
-    link: null,
+    description: 'An AI vision system for the automated visual inspection of industrial pistons, built as my bachelor thesis at Rolls-Royce Solutions in Friedrichshafen.',
+    highlights: [
+      'Bachelor thesis in the dual programme with Rolls-Royce Solutions',
+      'Deep learning and image processing for industrial quality inspection',
+      'Developed in a real production context; the code is proprietary',
+    ],
+    stack: ['Python', 'PyTorch', 'OpenCV', 'Deep Learning'],
+    links: [],
   },
   {
     num: '04',
@@ -39,8 +68,16 @@ const PROJECTS = [
     role: 'Mobile / Java',
     tags: ['Java', 'Android', 'SQLite'],
     year: '2025',
-    preview: `${import.meta.env.BASE_URL}assets/preview-fitness-tracker.png`,
-    link: 'https://github.com/philippsnr/Fitness-Tracker',
+    preview: asset('preview-fitness-tracker.png'),
+    description: 'An Android app to track nutrition, body weight and workouts, with a library of foods, exercises and muscle groups. Built as a team software project.',
+    highlights: [
+      'Meal logging with calorie and macronutrient tracking',
+      'Weight tracking with charts to visualise progress',
+      'Custom training plans and workout logging',
+      'Exercise library with the targeted muscle groups',
+    ],
+    stack: ['Java', 'Android', 'SQLite', 'Android Studio'],
+    links: [{ label: 'GitHub', url: 'https://github.com/philippsnr/Fitness-Tracker' }],
   },
   {
     num: '05',
@@ -50,7 +87,14 @@ const PROJECTS = [
     tags: ['Java', 'OOP', 'Game Design'],
     year: '2024',
     preview: null,
-    link: 'https://github.com/philippsnr/AdvanceWars',
+    description: 'A JavaFX remake of the turn-based strategy classic, built as a group project.',
+    highlights: [
+      'Six playable maps and ten unit types, from infantry to bombers',
+      'Turn-based movement and combat with attack targeting',
+      'Object-oriented game model with a JavaFX / FXML interface',
+    ],
+    stack: ['Java', 'JavaFX', 'Maven', 'OOP'],
+    links: [{ label: 'GitHub', url: 'https://github.com/philippsnr/AdvanceWars' }],
   },
 ]
 
@@ -78,8 +122,8 @@ const SKILLS = [
     { name: 'OpenShift', lvl: 'Comfortable', icon: null, iconText: 'OS' },
     { name: 'Azure DevOps', lvl: 'Comfortable', icon: 'devicon-azuredevops-plain' },
     { name: 'GitHub Actions', lvl: 'Comfortable', icon: 'devicon-github-plain' },
-    { name: 'Vercel', lvl: 'Comfortable', icon: 'devicon-vercel-original' },
-    { name: 'Cloudways', lvl: 'Comfortable', icon: null, iconText: 'CW' },
+    { name: 'Vercel', lvl: 'Comfortable', icon: null, img: asset('logo-vercel.svg') },
+    { name: 'Cloudways', lvl: 'Comfortable', icon: null, img: asset('logo-cloudways.svg') },
   ]},
   { cat: 'Tools', items: [
     { name: 'Git', lvl: 'Daily', icon: 'devicon-git-plain' },
@@ -110,7 +154,7 @@ const ICON_MAP = {
   'OpenShift': null,
   'Azure DevOps': 'devicon-azuredevops-plain',
   'GitHub Actions': 'devicon-github-plain',
-  'Vercel': 'devicon-vercel-original',
+  'Vercel': null,
   'Cloudways': null,
   'Git': 'devicon-git-plain',
   'Linux': 'devicon-linux-plain',
@@ -122,10 +166,14 @@ const ICON_MAP = {
   'MariaDB': 'devicon-mariadb-plain',
 }
 
+const IMG_MAP = {
+  'Vercel': asset('logo-vercel.svg'),
+  'Cloudways': asset('logo-cloudways.svg'),
+}
+
 const ICON_TEXT_MAP = {
   'OpenShift': 'OS',
   'Ollama': 'OL',
-  'Cloudways': 'CW',
 }
 
 
@@ -301,7 +349,7 @@ function About() {
             <a className="affil-card" href="https://nfaculty.com" target="_blank" rel="noreferrer">
               <span className="affil-lbl">Working at</span>
               <span className="affil-logo">
-                <img src={`${import.meta.env.BASE_URL}assets/logo-nfaculty.svg`} alt="nfaculty" />
+                <img src={asset('logo-nfaculty.svg')} alt="nfaculty" />
               </span>
               <span className="affil-sub">Working Student</span>
             </a>
@@ -318,14 +366,63 @@ function About() {
   )
 }
 
-function Projects() {
-  const [hover, setHover] = useState(null)
-  const [pos, setPos] = useState({ x: 0, y: 0 })
+function ProjectModal({ project, onClose }) {
+  const [shown, setShown] = useState(false)
   useEffect(() => {
-    const onMove = (e) => setPos({ x: e.clientX, y: e.clientY })
-    window.addEventListener('mousemove', onMove)
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [])
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const raf = requestAnimationFrame(() => setShown(true))
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
+      cancelAnimationFrame(raf)
+    }
+  }, [onClose])
+
+  const p = project
+  return createPortal(
+    <div className={`project-modal${shown ? ' open' : ''}`} onClick={onClose} role="dialog" aria-modal="true" aria-label={p.name}>
+      <div className="pm-panel" onClick={(e) => e.stopPropagation()}>
+        <button className="pm-close" onClick={onClose} aria-label="Close">×</button>
+        <div className="pm-media">
+          {p.preview ? (
+            <img src={p.preview} alt={`${p.name} preview`} />
+          ) : (
+            <div className="pm-ascii">
+              <pre>{makeAscii(Number(p.num) * 7919 + 13)}</pre>
+              <span>No public preview</span>
+            </div>
+          )}
+        </div>
+        <div className="pm-info">
+          <div className="pm-meta"><span>{p.num} / {p.role}</span><span>{p.year}</span></div>
+          <h3 className="pm-title">{p.name}<em>{p.sub}</em></h3>
+          <p className="pm-desc">{p.description}</p>
+          <ul className="pm-highlights">
+            {p.highlights.map(h => <li key={h}>{h}</li>)}
+          </ul>
+          <div className="pm-stack">
+            {p.stack.map(t => <span key={t}>{t}</span>)}
+          </div>
+          <div className="pm-links">
+            {p.links.length > 0 ? p.links.map((l, i) => (
+              <a key={l.url} className={`btn${i > 0 ? ' btn-ghost' : ''}`} href={l.url} target="_blank" rel="noreferrer">
+                <span>{l.label}</span><span className="arrow">↗</span>
+              </a>
+            )) : <span className="pm-nolink">Proprietary project, no public link</span>}
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
+function Projects() {
+  const [open, setOpen] = useState(null)
+  const close = useCallback(() => setOpen(null), [])
 
   return (
     <section className="section shell projects" id="work">
@@ -338,41 +435,18 @@ function Projects() {
       <div className="project-list">
         {PROJECTS.map((p, i) => (
           <Reveal key={p.num} delay={i * 60}>
-            <a
-              className="project-row"
-              href={p.link || undefined}
-              target={p.link ? '_blank' : undefined}
-              rel={p.link ? 'noreferrer' : undefined}
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(null)}
-            >
+            <button type="button" className="project-row" onClick={() => setOpen(i)}>
               <span className="num">{p.num}</span>
               <span className="name">{p.name}<em>— {p.sub}</em></span>
               <span className="role">{p.role}</span>
               <span className="tags">{p.tags.map(t => <span key={t}>{t}</span>)}</span>
-              <span className="year">{p.year}{p.link ? ' ↗' : ''}</span>
-            </a>
+              <span className="year">{p.year} <span className="open-hint">+</span></span>
+            </button>
           </Reveal>
         ))}
       </div>
 
-      <div
-        className={`project-preview ${hover !== null ? 'visible' : ''}`}
-        style={{ left: pos.x, top: pos.y }}
-      >
-        {hover !== null && PROJECTS[hover].preview ? (
-          <img
-            src={PROJECTS[hover].preview}
-            alt={PROJECTS[hover].name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-          />
-        ) : (
-          <div className="frame">
-            <pre className="ascii">{hover !== null ? makeAscii(hover * 7919 + 13) : ''}</pre>
-          </div>
-        )}
-        <div className="label">{hover !== null ? `${PROJECTS[hover].name} / preview` : ''}</div>
-      </div>
+      {open !== null && <ProjectModal project={PROJECTS[open]} onClose={close} />}
     </section>
   )
 }
@@ -397,6 +471,7 @@ function Skills() {
                 <li key={it.name}>
                   <span className="sk-name">
                     {it.icon && <i className={`${it.icon} colored`}></i>}
+                    {it.img && <img className="sk-img" src={it.img} alt="" />}
                     {!it.icon && it.iconText && <span className="icon-text">{it.iconText}</span>}
                     {it.name}
                   </span>
@@ -414,6 +489,7 @@ function Skills() {
           {items.map((t, i) => (
             <span key={i} className="pill">
               {ICON_MAP[t] && <i className={`${ICON_MAP[t]} colored`}></i>}
+              {IMG_MAP[t] && <img className="sk-img" src={IMG_MAP[t]} alt="" />}
               {!ICON_MAP[t] && ICON_TEXT_MAP[t] && <span className="icon-text">{ICON_TEXT_MAP[t]}</span>}
               {t}
             </span>
