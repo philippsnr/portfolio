@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { startPenalty } from './PenaltyGame.jsx'
 import { SECRETS, SECRET_COUNT, foundSecrets, unlock, startMatrix, celebrateGoal, selfDestruct, typingPrefix } from './easterEggs.jsx'
 
 const SECRET = 'sudo hire philipp'
@@ -39,7 +40,7 @@ function runCommand(raw, { projects, skills }) {
         '  cat resume.pdf    open my CV',
         '  coffee            take a break',
         '  play              snake, obviously',
-        '  penalty           penalty shootout vs. the keeper',
+        '  penalty           penalty shootout vs. Keeper FC',
         '  train             train a very serious model',
         '  matrix            follow the white rabbit',
         '  goal              ⚽',
@@ -82,7 +83,7 @@ function runCommand(raw, { projects, skills }) {
     case 'matrix':
       return { lines: ['wake up, neo…'], action: 'matrix' }
     case 'penalty':
-      return { lines: ['⚽ penalty shootout — best of 5, then sudden death.', 'you shoot first. aim: left / middle / right (l/m/r), q to quit.'], action: 'penalty' }
+      return { lines: ['⚽ kicking off the penalty shootout…'], action: 'penalty' }
     case 'train':
       return { lines: ['loading dataset: candidates.csv (1 row)…'], action: 'train' }
     case 'goal':
@@ -98,58 +99,6 @@ function runCommand(raw, { projects, skills }) {
     default:
       return { lines: [`command not found: ${cmd.split(' ')[0]}. Type 'help'.`] }
   }
-}
-
-// === Penalty shootout ===
-const SIDES = ['left', 'middle', 'right']
-const parseSide = (s) => ({ l: 0, left: 0, m: 1, middle: 1, c: 1, center: 1, r: 2, right: 2 })[s.trim().toLowerCase()]
-
-function goalArt(keeper, ball) {
-  const cell = (i) => {
-    const k = keeper === i, b = ball === i
-    return (k && b ? ' [K o] ' : k ? '  [K]  ' : b ? '   o   ' : '       ')
-  }
-  return [
-    '  _______________________',
-    ` |${cell(0)}|${cell(1)}|${cell(2)}|`,
-    ' |_______|_______|_______|',
-  ]
-}
-
-const newShootout = () => ({ you: 0, cpu: 0, youShots: 0, cpuShots: 0, turn: 'shoot' })
-const scoreLine = (g) => `score: you ${g.you} – ${g.cpu} keeper fc   (${g.youShots}/${g.cpuShots} shots)`
-
-// returns [lines, finished, won]
-function shootoutStep(g, side) {
-  const rand = Math.floor(Math.random() * 3)
-  const lines = []
-  if (g.turn === 'shoot') {
-    const saved = rand === side
-    g.youShots++
-    if (!saved) g.you++
-    lines.push(...goalArt(rand, side), saved ? `🧤 saved! the keeper dived ${SIDES[rand]}.` : `⚽ GOAL! keeper went ${SIDES[rand]}.`)
-    g.turn = 'save'
-  } else {
-    const saved = rand === side
-    g.cpuShots++
-    if (!saved) g.cpu++
-    lines.push(...goalArt(side, rand), saved ? '🧤 what a save!' : `⚽ they scored ${SIDES[rand]}.`)
-    g.turn = 'shoot'
-  }
-  lines.push(scoreLine(g))
-  // decided once one side can't catch up within 5 shots, or after a full sudden-death round
-  const regulation = g.youShots <= 5 && g.cpuShots <= 5
-  const decided = regulation
-    ? g.you > g.cpu + (5 - g.cpuShots) || g.cpu > g.you + (5 - g.youShots)
-    : g.youShots === g.cpuShots && g.you !== g.cpu
-  if (decided || (g.youShots === 5 && g.cpuShots === 5 && g.you !== g.cpu)) {
-    const won = g.you > g.cpu
-    lines.push(won ? '🏆 you win the shootout!' : "❌ you lost. type 'penalty' for a rematch.")
-    return [lines, true, won]
-  }
-  if (g.youShots === 5 && g.cpuShots === 5) lines.push('level after five — sudden death!')
-  lines.push(g.turn === 'shoot' ? 'your shot. aim: left / middle / right' : 'they step up. dive: left / middle / right')
-  return [lines, false, false]
 }
 
 // === Fake model training ===
@@ -260,9 +209,8 @@ export function SecretTerminal({ projects, skills }) {
   const [history, setHistory] = useState([])
   const [histIdx, setHistIdx] = useState(-1)
   const [playing, setPlaying] = useState(false)
-  // 'penalty' while a shootout runs, 'busy' while output is still streaming in
+  // 'busy' while output is still streaming in
   const [mode, setMode] = useState(null)
-  const shootout = useRef(null)
   const timers = useRef([])
   const inputRef = useRef(null)
   const bodyRef = useRef(null)
@@ -304,24 +252,6 @@ export function SecretTerminal({ projects, skills }) {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
-  const submitPenalty = () => {
-    const raw = input
-    setInput('')
-    if (raw.trim().toLowerCase() === 'q') {
-      setMode(null)
-      setLines(l => [...l, `${prompt} ${raw}`, 'shootout abandoned.'])
-      return
-    }
-    const side = parseSide(raw)
-    if (side === undefined) {
-      setLines(l => [...l, `${prompt} ${raw}`, 'pick left, middle or right (l/m/r), or q to quit.'])
-      return
-    }
-    const [out, finished, won] = shootoutStep(shootout.current, side)
-    setLines(l => [...l, `${prompt} ${raw}`, ...out])
-    if (finished) { setMode(null); if (won) unlock('penalty') }
-  }
-
   const streamLines = (out, onDone) => {
     setMode('busy')
     out.forEach((line, i) => {
@@ -332,12 +262,9 @@ export function SecretTerminal({ projects, skills }) {
     })
   }
 
-  const prompt = mode === 'penalty' ? (shootout.current?.turn === 'save' ? 'dive>' : 'aim>') : PROMPT
-
   const submit = (e) => {
     e.preventDefault()
     if (mode === 'busy') return
-    if (mode === 'penalty') { submitPenalty(); return }
     const cmd = input.trim().toLowerCase()
     setInput('')
     setHistIdx(-1)
@@ -352,7 +279,7 @@ export function SecretTerminal({ projects, skills }) {
   const runAction = (action) => {
     switch (action) {
       case 'play': setPlaying(true); unlock('snake'); break
-      case 'penalty': shootout.current = newShootout(); setMode('penalty'); break
+      case 'penalty': setTimeout(() => { setOpen(false); startPenalty() }, 600); break
       case 'train': streamLines(trainingScript(), () => unlock('train')); break
       case 'coffee': unlock('coffee'); break
       case 'matrix': setTimeout(() => { setOpen(false); startMatrix() }, 700); break
@@ -391,9 +318,9 @@ export function SecretTerminal({ projects, skills }) {
         <button type="button" onClick={() => setOpen(false)} aria-label="Close terminal">×</button>
       </div>
       <div className="terminal-body" ref={bodyRef}>
-        {lines.map((l, i) => <div key={i} className={/^(guest@|aim>|dive>)/.test(l) ? 'cmd' : ''}>{l || ' '}</div>)}
+        {lines.map((l, i) => <div key={i} className={l.startsWith(PROMPT) ? 'cmd' : ''}>{l || ' '}</div>)}
         {playing ? <Snake onExit={endGame} /> : <form onSubmit={submit} className="terminal-input">
-          <span className="prompt">{mode === 'busy' ? '' : prompt}</span>
+          <span className="prompt">{mode === 'busy' ? '' : PROMPT}</span>
           <input
             ref={inputRef}
             value={input}

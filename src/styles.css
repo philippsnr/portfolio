@@ -1955,3 +1955,223 @@ html.golden .footer span:last-child { color: var(--gold); }
   .red-card .card, .formation, .det-box, .det-scan { animation: none; opacity: 1; }
   .det-scan { display: none; }
 }
+
+/* === Penalty shootout === */
+.penalty {
+  position: fixed;
+  inset: 0;
+  z-index: 6500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: oklch(0.06 0.006 270 / 0.94);
+  backdrop-filter: blur(8px);
+  animation: fade-in 0.3s ease both;
+  user-select: none;
+}
+.pk-board {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.pk-team { color: var(--text); }
+.pk-score {
+  min-width: 70px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--accent);
+}
+.pk-dots { display: flex; gap: 5px; }
+.pk-dots i {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--muted-2);
+}
+.pk-dots i.goal { background: var(--accent); border-color: var(--accent); }
+.pk-dots i.miss { background: oklch(0.62 0.22 27); border-color: oklch(0.62 0.22 27); }
+.pk-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pk-scene {
+  width: min(920px, 100%, calc((100vh - 170px) * 800 / 520));
+  height: auto;
+  border: 1px solid var(--line);
+  cursor: crosshair;
+  touch-action: none;
+}
+.pk-ad {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  fill: var(--accent);
+  opacity: 0.75;
+}
+.pk-keeper {
+  transform-box: view-box;
+  transform-origin: 400px 330px;
+  transition: transform 0.36s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.pk-keeper.idle { animation: keeper-sway 1.6s ease-in-out infinite; }
+@keyframes keeper-sway {
+  0%, 100% { translate: -10px 0; }
+  50% { translate: 10px 0; }
+}
+.pk-glove { fill: var(--accent); stroke: #0b0b0f; stroke-width: 1.5; }
+.pk-aim { stroke: var(--accent); stroke-width: 2.5; fill: none; filter: drop-shadow(0 0 6px oklch(0.88 0.22 130 / 0.7)); }
+.pk-aim line { stroke-width: 1; stroke-dasharray: 4 5; opacity: 0.6; }
+.pk-banner {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(48px, 10vw, 130px);
+  letter-spacing: -0.03em;
+  color: var(--text);
+  text-shadow: 0 8px 40px oklch(0 0 0 / 0.7);
+  animation: pk-pop 1.5s var(--ease-out-expo) both;
+}
+.pk-banner.good { color: var(--accent); text-shadow: 0 0 60px oklch(0.88 0.22 130 / 0.6); }
+.pk-banner.bad { color: oklch(0.68 0.2 27); }
+@keyframes pk-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  20% { transform: scale(1.06); opacity: 1; }
+  30% { transform: scale(1); }
+  80% { opacity: 1; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+.pk-over {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: oklch(0.06 0.006 270 / 0.7);
+  animation: fade-in 0.4s ease both;
+}
+.pk-verdict { font-size: clamp(32px, 5vw, 56px); font-weight: 600; letter-spacing: -0.02em; }
+.pk-verdict.win { color: var(--accent); }
+.pk-final { font-family: var(--font-mono); font-size: 18px; color: var(--muted); }
+.pk-actions { display: flex; gap: 12px; margin-top: 8px; }
+.pk-actions .btn { padding: 14px 24px; }
+.pk-actions .btn-ghost { border-color: var(--line); color: var(--muted); }
+.pk-hint {
+  min-height: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pk-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 22px;
+}
+.pk-close:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 540px) {
+  .pk-board { gap: 8px; padding: 8px 10px; font-size: 10px; }
+  .pk-dots i { width: 7px; height: 7px; }
+  .pk-score { font-size: 20px; min-width: 50px; }
+}
+
+/* === All secrets found === */
+.all-secrets {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: radial-gradient(circle at 50% 40%, oklch(0.25 0.06 85 / 0.9), oklch(0.06 0.01 85 / 0.96) 70%);
+  backdrop-filter: blur(10px);
+  animation: fade-in 0.5s ease both;
+}
+.all-secrets canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.as-panel {
+  position: relative;
+  max-width: 560px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 40px 40px;
+  border: 1px solid oklch(0.83 0.15 85);
+  background: oklch(0.12 0.02 85 / 0.92);
+  box-shadow: 0 0 120px oklch(0.83 0.15 85 / 0.35);
+  animation: as-in 0.9s var(--ease-out-expo) both;
+}
+@keyframes as-in {
+  from { transform: scale(0.7) translateY(40px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.as-trophy {
+  font-size: 84px;
+  line-height: 1;
+  filter: drop-shadow(0 0 30px oklch(0.83 0.15 85 / 0.8));
+  animation: as-trophy 2.4s ease-in-out infinite;
+}
+@keyframes as-trophy {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-10px) rotate(4deg); }
+}
+.as-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: oklch(0.83 0.15 85);
+}
+.as-title { font-size: clamp(34px, 6vw, 56px); font-weight: 500; letter-spacing: -0.03em; line-height: 1.05; }
+.as-title em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: oklch(0.83 0.15 85); }
+.as-text { color: var(--muted); font-size: 16px; line-height: 1.55; }
+.as-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; align-items: center; margin-top: 6px; }
+.as-btn { border-color: oklch(0.83 0.15 85); color: oklch(0.83 0.15 85); }
+.as-btn::before { background: oklch(0.83 0.15 85); }
+.as-close {
+  background: none;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.as-close:hover { color: var(--text); }
+
+/* golden state, after the finale */
+html.golden .nav-logo span:last-child::after {
+  content: " ★ 14/14";
+  color: var(--gold);
+}
+html.golden .scroll-progress { background: var(--gold); }
+@media (prefers-reduced-motion: reduce) {
+  .pk-keeper.idle, .as-trophy, .as-panel, .pk-banner { animation: none; }
+}

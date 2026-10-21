@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { SecretTerminal } from './Terminal.jsx'
-import { Achievements, MatrixRain, GoalCelebration, RedCard, Formation, LightsOff, Gravity, startMatrix, toggleLights, unlock, allSecretsFound } from './easterEggs.jsx'
+import { PenaltyGame } from './PenaltyGame.jsx'
+import { Achievements, MatrixRain, GoalCelebration, RedCard, Formation, LightsOff, Gravity, AllSecretsCelebration, startMatrix, toggleLights, unlock, allSecretsFound } from './easterEggs.jsx'
 import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, GlitchWord, DecodeCounter, useBinaryRain, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
@@ -183,7 +184,6 @@ const DETECTIONS = [
   { label: 'person', score: '0.98', x: 4, y: 27, w: 92, h: 72 },
   { label: 'hire_candidate', score: '0.99', x: 32, y: 29, w: 36, h: 34 },
   { label: 'smile', score: '0.95', x: 41, y: 50, w: 18, h: 9 },
-  { label: 'coffee_dependency', score: '0.87', x: 28, y: 72, w: 44, h: 24 },
 ]
 
 function PhotoCard() {
@@ -630,6 +630,8 @@ export default function App() {
       <Formation skills={SKILLS} />
       <LightsOff />
       <Gravity />
+      <PenaltyGame />
+      <AllSecretsCelebration />
       <MatrixRain />
       <GoalCelebration />
 

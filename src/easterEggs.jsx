@@ -47,9 +47,6 @@ export function Achievements() {
         setTimeout(() => setToasts(t => t.filter(x => x.key !== toast.key)), 4200)
       }
       add({ ...e.detail, name: SECRETS[e.detail.id], key: `${e.detail.id}-${Date.now()}` })
-      if (e.detail.count >= SECRET_COUNT) {
-        setTimeout(() => add({ id: 'all', name: "Found everything. You're hired.", count: e.detail.count, key: `all-${Date.now()}`, gold: true }), 1500)
-      }
     }
     window.addEventListener('ps-achievement', onUnlock)
     return () => window.removeEventListener('ps-achievement', onUnlock)
@@ -157,6 +154,40 @@ export function MatrixRain({ duration = 7000 }) {
   return createPortal(<canvas ref={canvasRef} className="matrix-rain" aria-hidden="true" />, document.body)
 }
 
+// === Confetti: two cannons from the bottom corners of a full-screen canvas ===
+export function fireConfetti(canvas, colors, count = 220) {
+  const ctx = canvas.getContext('2d')
+  const w = canvas.width = window.innerWidth
+  const h = canvas.height = window.innerHeight
+  const parts = Array.from({ length: count }, (_, i) => {
+    const left = i % 2 === 0
+    const angle = (left ? -60 : -120) * Math.PI / 180 + (Math.random() - 0.5) * 0.7
+    const speed = 12 + Math.random() * 10
+    return {
+      x: left ? 0 : w, y: h,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      size: 5 + Math.random() * 6, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }
+  })
+  let raf
+  const frame = () => {
+    ctx.clearRect(0, 0, w, h)
+    for (const p of parts) {
+      p.vy += 0.28; p.vx *= 0.99
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr
+      ctx.save()
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot)
+      ctx.fillStyle = p.color
+      ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
+      ctx.restore()
+    }
+    raf = requestAnimationFrame(frame)
+  }
+  raf = requestAnimationFrame(frame)
+  return () => cancelAnimationFrame(raf)
+}
+
 // === Goal celebration ===
 export const celebrateGoal = () => emit('ps-goal')
 
@@ -176,38 +207,8 @@ export function GoalCelebration() {
     const stop = setTimeout(() => setActive(false), 3200)
     const canvas = canvasRef.current
     if (reducedMotion() || !canvas) return () => clearTimeout(stop)
-    const ctx = canvas.getContext('2d')
-    const w = canvas.width = window.innerWidth
-    const h = canvas.height = window.innerHeight
-    const colors = [cssVar('--accent'), '#ffffff', cssVar('--muted')]
-    // two confetti cannons from the bottom corners
-    const parts = Array.from({ length: 220 }, (_, i) => {
-      const left = i % 2 === 0
-      const angle = (left ? -60 : -120) * Math.PI / 180 + (Math.random() - 0.5) * 0.7
-      const speed = 12 + Math.random() * 10
-      return {
-        x: left ? 0 : w, y: h,
-        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-        size: 5 + Math.random() * 6, rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      }
-    })
-    let raf
-    const frame = () => {
-      ctx.clearRect(0, 0, w, h)
-      for (const p of parts) {
-        p.vy += 0.28; p.vx *= 0.99
-        p.x += p.vx; p.y += p.vy; p.rot += p.vr
-        ctx.save()
-        ctx.translate(p.x, p.y); ctx.rotate(p.rot)
-        ctx.fillStyle = p.color
-        ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
-        ctx.restore()
-      }
-      raf = requestAnimationFrame(frame)
-    }
-    raf = requestAnimationFrame(frame)
-    return () => { cancelAnimationFrame(raf); clearTimeout(stop) }
+    const stopConfetti = fireConfetti(canvas, [cssVar('--accent'), '#ffffff', cssVar('--muted')])
+    return () => { stopConfetti(); clearTimeout(stop) }
   }, [active])
 
   if (!active) return null
@@ -261,7 +262,7 @@ export function selfDestruct() {
 // === Red card for click spamming ===
 export function RedCard() {
   const [active, setActive] = useState(false)
-  const [left, setLeft] = useState(3)
+  const [left, setLeft] = useState(5)
   useEffect(() => {
     let clicks = []
     const onClick = () => {
@@ -274,7 +275,7 @@ export function RedCard() {
   }, [])
   useEffect(() => {
     if (!active) return
-    setLeft(3)
+    setLeft(5)
     const id = setInterval(() => setLeft(l => {
       if (l <= 1) { clearInterval(id); setActive(false) }
       return l - 1
@@ -570,6 +571,51 @@ export function Gravity() {
     <button type="button" className="gravity-reset btn" onClick={() => setActive(false)}>
       <span>↺ Reset gravity</span>
     </button>,
+    document.body
+  )
+}
+
+// === All secrets found: a full-screen golden finale ===
+export function AllSecretsCelebration() {
+  const [active, setActive] = useState(false)
+  const canvasRef = useRef(null)
+  useEffect(() => {
+    const on = (e) => { if (e.detail.count >= SECRET_COUNT) setTimeout(() => setActive(true), 1200) }
+    window.addEventListener('ps-achievement', on)
+    return () => window.removeEventListener('ps-achievement', on)
+  }, [])
+  useEffect(() => {
+    if (!active) return
+    const gold = ['oklch(0.83 0.15 85)', 'oklch(0.9 0.12 95)', '#ffffff', 'oklch(0.7 0.14 70)']
+    let stopBurst = () => {}
+    let again
+    if (!reducedMotion() && canvasRef.current) {
+      stopBurst = fireConfetti(canvasRef.current, gold, 320)
+      // a second burst for good measure
+      again = setTimeout(() => { stopBurst(); stopBurst = fireConfetti(canvasRef.current, gold, 260) }, 1600)
+    }
+    const onKey = (e) => { if (e.key === 'Escape') setActive(false) }
+    window.addEventListener('keydown', onKey)
+    return () => { clearTimeout(again); stopBurst(); window.removeEventListener('keydown', onKey) }
+  }, [active])
+
+  if (!active) return null
+  return createPortal(
+    <div className="all-secrets" role="dialog" aria-label="All secrets found" onClick={() => setActive(false)}>
+      <canvas ref={canvasRef} aria-hidden="true" />
+      <div className="as-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="as-trophy">🏆</div>
+        <div className="as-count">{SECRET_COUNT}/{SECRET_COUNT} secrets found</div>
+        <h2 className="as-title">You found <em>everything.</em></h2>
+        <p className="as-text">Every terminal command, every shortcut, every hidden click. That kind of curiosity is exactly what I look for in a team, so let's talk.</p>
+        <div className="as-actions">
+          <a className="btn as-btn" href="mailto:contact@philipp-staudinger.com?subject=I%20found%20all%2014%20secrets">
+            <span>You're hired? Let's talk</span><span className="arrow">↗</span>
+          </a>
+          <button type="button" className="as-close" onClick={() => setActive(false)}>close</button>
+        </div>
+      </div>
+    </div>,
     document.body
   )
 }
