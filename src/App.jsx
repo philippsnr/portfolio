@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { SecretTerminal } from './Terminal.jsx'
-import { Achievements, MatrixRain, GoalCelebration, startMatrix, unlock } from './easterEggs.jsx'
+import { Achievements, MatrixRain, GoalCelebration, RedCard, Formation, LightsOff, Gravity, startMatrix, toggleLights, unlock, allSecretsFound } from './easterEggs.jsx'
 import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, GlitchWord, DecodeCounter, useBinaryRain, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
@@ -178,10 +178,25 @@ const ICON_TEXT_MAP = {
 }
 
 
+// fake object detection boxes on the photo, in % of the frame
+const DETECTIONS = [
+  { label: 'person', score: '0.98', x: 4, y: 27, w: 92, h: 72 },
+  { label: 'hire_candidate', score: '0.99', x: 32, y: 29, w: 36, h: 34 },
+  { label: 'smile', score: '0.95', x: 41, y: 50, w: 18, h: 9 },
+  { label: 'coffee_dependency', score: '0.87', x: 28, y: 72, w: 44, h: 24 },
+]
+
 function PhotoCard() {
   const ref = useRef(null)
   const imgRef = useRef(null)
+  const [vision, setVision] = useState(false)
   useBinaryRain(ref, imgRef)
+  useEffect(() => {
+    if (!vision) return
+    unlock('vision')
+    const id = setTimeout(() => setVision(false), 7000)
+    return () => clearTimeout(id)
+  }, [vision])
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -209,12 +224,22 @@ function PhotoCard() {
     }
   }, [])
   return (
-    <div className="about-photo reveal" ref={ref}>
+    <div className="about-photo reveal" ref={ref} onDoubleClick={() => setVision(v => !v)}>
       <span className="corner tl"></span>
       <span className="corner tr"></span>
       <span className="corner bl"></span>
       <span className="corner br"></span>
       <img ref={imgRef} src={asset('philipp.png')} alt="Philipp Staudinger" />
+      {vision && (
+        <div className="detections" aria-hidden="true">
+          {DETECTIONS.map((d, i) => (
+            <div key={d.label} className="det-box" style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.w}%`, height: `${d.h}%`, animationDelay: `${i * 0.35}s` }}>
+              <span className="det-label">{d.label} {d.score}</span>
+            </div>
+          ))}
+          <div className="det-scan"></div>
+        </div>
+      )}
       <div className="photo-meta">
         <span>P. STAUDINGER · 2005</span>
         <span className="accent">● 21</span>
@@ -536,6 +561,20 @@ const NAV_ITEMS = [['intro','Intro'],['about','About'],['work','Work'],['stack',
 export default function App() {
   const { progress, active } = useScrollIndicators()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [golden, setGolden] = useState(() => allSecretsFound())
+  useEffect(() => {
+    const onUnlock = () => setGolden(allSecretsFound())
+    window.addEventListener('ps-achievement', onUnlock)
+    return () => window.removeEventListener('ps-achievement', onUnlock)
+  }, [])
+  useEffect(() => { document.documentElement.classList.toggle('golden', golden) }, [golden])
+  // three quick clicks on the live status dot switch the lights off
+  const dotClicks = useRef([])
+  const onDotClick = () => {
+    const now = Date.now()
+    dotClicks.current = [...dotClicks.current.filter(t => now - t < 1500), now]
+    if (dotClicks.current.length >= 3) { dotClicks.current = []; toggleLights() }
+  }
   // seven quick clicks on the logo enter the Matrix
   const logoClicks = useRef([])
   const onLogoClick = () => {
@@ -587,17 +626,21 @@ export default function App() {
       <Contact />
       <SecretTerminal projects={PROJECTS} skills={SKILLS} />
       <Achievements />
+      <RedCard />
+      <Formation skills={SKILLS} />
+      <LightsOff />
+      <Gravity />
       <MatrixRain />
       <GoalCelebration />
 
       <footer className="footer shell">
         <span>© 2026 — PHILIPP STAUDINGER</span>
         <span>REGENSBURG · <Clock /></span>
-        <span>BUILT WITH CARE</span>
+        <span>{golden ? "YOU FOUND EVERYTHING. YOU'RE HIRED. 🏆" : 'BUILT WITH CARE'}</span>
       </footer>
 
       <div className="status-strip">
-        <span className="live"><NowStatus /></span>
+        <span className="live" onClick={onDotClick}><NowStatus /></span>
         <span>SECTION · {active.toUpperCase()}</span>
         <span>{Math.round(progress * 100)}% scrolled</span>
       </div>
