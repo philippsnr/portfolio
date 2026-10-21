@@ -223,7 +223,7 @@ function Hero() {
           </div>
           <div className="hero-tagline">
             <span className="tag-label">— Short version</span>
-            <p>M.Sc. Computer Science student focusing on <em>AI & Data Science</em>: machine learning, computer vision, and backend engineering.</p>
+            <p>M.Sc. Computer Science student at <em>OTH Regensburg</em>, focusing on <em>AI & Data Science</em>: machine learning, computer vision, and backend engineering.</p>
           </div>
         </div>
         <h1 className="hero-title">
@@ -234,13 +234,13 @@ function Hero() {
       <div className="hero-meta">
         <div className="cell">
           <div className="cell-label">Currently</div>
-          <div className="cell-value">Working Student at nfaculty GmbH, alongside an M.Sc. in Computer Science (AI & Data Science).</div>
+          <div className="cell-value">Working Student at nfaculty GmbH, alongside an M.Sc. in Computer Science (AI & Data Science) at OTH Regensburg.</div>
         </div>
         <div className="cell">
           <div className="cell-label">Based in</div>
           <div className="cell-value">
-            Friedrichshafen, Germany<br/>
-            <span style={{ color: 'var(--muted)' }}>47.65°N&nbsp;&nbsp;9.48°E</span>
+            Regensburg, Germany<br/>
+            <span style={{ color: 'var(--muted)' }}>49.01°N&nbsp;&nbsp;12.10°E</span>
           </div>
         </div>
         <div className="cell">
@@ -265,7 +265,7 @@ function About() {
       <Reveal as="div" className="section-header">
         <div className="index">02 / About</div>
         <h2 className="title">A bit about <em>me.</em></h2>
-        <div className="meta">M.SC. CS · NFACULTY<br/>FRIEDRICHSHAFEN · DE</div>
+        <div className="meta">OTH REGENSBURG · NFACULTY<br/>REGENSBURG · DE</div>
       </Reveal>
 
       <div className="about-grid">
@@ -274,7 +274,7 @@ function About() {
         <div className="about-copy">
           <Reveal as="h3">— Background</Reveal>
           <Reveal delay={100}><p>
-            I'm <em>Philipp</em>, a Master's student in Computer Science specializing in <em>AI & Data Science</em>, working alongside my studies as a working student at <em>nfaculty GmbH</em>.
+            I'm <em>Philipp</em>, a Master's student in Computer Science at <em>OTH Regensburg</em>, specializing in <em>AI & Data Science</em>, working alongside my studies as a working student at <em>nfaculty GmbH</em>.
           </p></Reveal>
           <Reveal delay={200}><p>
             Before that, I completed my B.Sc. in Intelligent Systems at DHBW Ravensburg in a dual programme with Rolls-Royce Solutions — finishing with an AI vision system for industrial piston inspection as my bachelor thesis. My work sits between machine learning, computer vision, data and backend engineering.
@@ -494,7 +494,7 @@ export default function App() {
 
       <footer className="footer shell">
         <span>© 2026 — PHILIPP STAUDINGER</span>
-        <span>FRIEDRICHSHAFEN · <Clock /></span>
+        <span>REGENSBURG · <Clock /></span>
         <span>BUILT WITH CARE</span>
       </footer>
 
