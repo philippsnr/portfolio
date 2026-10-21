@@ -1630,3 +1630,121 @@ i.devicon-pandas-plain.colored { color: var(--text) !important; }
   font: inherit;
   caret-color: var(--accent);
 }
+
+/* === Easter eggs === */
+.nav-logo { user-select: none; }
+
+/* Snake inside the terminal */
+.snake { color: var(--text); }
+.snake-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--accent);
+  margin: 6px 0;
+}
+.snake pre { line-height: 1.15; letter-spacing: 0.15em; color: var(--muted); }
+
+/* Matrix mode */
+.matrix-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  pointer-events: none;
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: matrix-fade 7s ease-in-out both;
+}
+@keyframes matrix-fade {
+  0% { opacity: 0; }
+  10%, 85% { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+html.matrix-mode { --text: oklch(0.88 0.22 130); --muted: oklch(0.65 0.16 130); }
+
+/* Goal celebration */
+.goal-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+.goal-celebration canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.goal-text {
+  position: relative;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(64px, 16vw, 240px);
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-shadow: 0 0 60px oklch(0.88 0.22 130 / 0.5);
+  animation: goal-pop 3.2s var(--ease-out-expo) both;
+}
+.goal-text em { font-family: var(--font-serif); font-weight: 400; color: var(--accent); }
+@keyframes goal-pop {
+  0% { transform: scale(0.3) rotate(-6deg); opacity: 0; }
+  15% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  25% { transform: scale(1) rotate(0); }
+  80% { opacity: 1; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+
+/* Self-destruct */
+html.destructing { --text: oklch(0.7 0.2 25); --accent: oklch(0.7 0.2 25); }
+/* shake the sections, not body: a transform on body would break the fixed nav */
+html.destructing :is(.hero, .section, .contact, .footer) { animation: destruct-shake 0.12s linear infinite; }
+@keyframes destruct-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Achievement toasts */
+.achievements {
+  position: fixed;
+  left: 24px;
+  bottom: 64px;
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.achievement {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  min-width: 260px;
+  padding: 14px 18px;
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  box-shadow: 0 16px 40px oklch(0 0 0 / 0.5);
+  animation: ach-in 4.2s var(--ease-out-expo) both;
+}
+.achievement .trophy { font-size: 26px; }
+.ach-lbl, .ach-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.ach-count { color: var(--muted); }
+.ach-name { font-size: 15px; font-weight: 500; margin: 2px 0; }
+@keyframes ach-in {
+  0% { transform: translateX(-120%); opacity: 0; }
+  8%, 88% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(-120%); opacity: 0; }
+}
+@media (max-width: 540px) {
+  .achievements { left: 16px; right: 16px; }
+  .achievement { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.destructing :is(.hero, .section, .contact, .footer) { animation: none; }
+  .matrix-rain, .goal-text, .achievement { animation: none; }
+}

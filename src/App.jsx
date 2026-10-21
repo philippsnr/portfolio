@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { SecretTerminal } from './Terminal.jsx'
+import { Achievements, MatrixRain, GoalCelebration, startMatrix, unlock } from './easterEggs.jsx'
 import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, GlitchWord, DecodeCounter, useBinaryRain, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
@@ -229,6 +230,7 @@ function useScrollIndicators() {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight
       setProgress(max > 0 ? window.scrollY / max : 0)
+      if (max > 0 && window.scrollY >= max - 4) unlock('bottom')
       const sections = ['intro', 'about', 'work', 'stack', 'contact']
       const mid = window.scrollY + window.innerHeight * 0.4
       let cur = 'intro'
@@ -534,6 +536,13 @@ const NAV_ITEMS = [['intro','Intro'],['about','About'],['work','Work'],['stack',
 export default function App() {
   const { progress, active } = useScrollIndicators()
   const [menuOpen, setMenuOpen] = useState(false)
+  // seven quick clicks on the logo enter the Matrix
+  const logoClicks = useRef([])
+  const onLogoClick = () => {
+    const now = Date.now()
+    logoClicks.current = [...logoClicks.current.filter(t => now - t < 3000), now]
+    if (logoClicks.current.length >= 7) { logoClicks.current = []; startMatrix() }
+  }
   return (
     <>
       <BgGlow />
@@ -545,7 +554,7 @@ export default function App() {
       <div className="scroll-progress" style={{ transform: `scaleX(${progress})` }}></div>
 
       <nav className="nav">
-        <div className="nav-logo">
+        <div className="nav-logo" onClick={onLogoClick}>
           <span className="dot"></span>
           <span>P.STAUDINGER / DEV</span>
         </div>
@@ -577,6 +586,9 @@ export default function App() {
       <Skills />
       <Contact />
       <SecretTerminal projects={PROJECTS} skills={SKILLS} />
+      <Achievements />
+      <MatrixRain />
+      <GoalCelebration />
 
       <footer className="footer shell">
         <span>© 2026 — PHILIPP STAUDINGER</span>
