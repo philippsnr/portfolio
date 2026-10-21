@@ -176,35 +176,161 @@ export function ScrambleOnView({ children, className = '', delay = 0, as: Tag = 
   return <Tag ref={ref} className={className}>{children}</Tag>
 }
 
-// === "bit" that occasionally glitches into a 0 or 1 ===
-export function BitGlitch() {
+// === Word that occasionally glitches into one of its variants ===
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+export function GlitchWord({ word, variants, className = '', introDelay = null, firstMin = 3000, firstMax = 7000 }) {
   const ref = useRef(null)
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const reduced = prefersReducedMotion()
+    const timers = []
+    const later = (fn, ms) => timers.push(setTimeout(fn, ms))
+    const between = (min, max) => min + Math.random() * (max - min)
+
+    // optional scramble-in when the word first scrolls into view
+    let io
+    if (introDelay !== null && !reduced) {
+      io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return
+        io.disconnect()
+        later(() => scrambleText(el, word, 1100), introDelay)
+      }, { threshold: 0.4 })
+      io.observe(el)
+    }
+    if (reduced) return () => io?.disconnect()
+
     // lock the width (in em, so it follows the responsive font size) once fonts are loaded
     document.fonts.ready.then(() => {
       el.style.width = `${el.offsetWidth / parseFloat(getComputedStyle(el).fontSize)}em`
     })
-    let timer
-    const schedule = (fn, min, max) => { timer = setTimeout(fn, min + Math.random() * (max - min)) }
-    const glitch = () => {
+    const swap = (text, ms) => {
       el.classList.add('glitching')
-      scrambleText(el, Math.random() < 0.5 ? '0' : '1', 350)
-      setTimeout(() => el.classList.remove('glitching'), 350)
-      schedule(restore, 1200, 2200)
+      scrambleText(el, text, ms)
+      later(() => el.classList.remove('glitching'), ms)
+    }
+    const glitch = () => {
+      swap(variants[Math.floor(Math.random() * variants.length)], 350)
+      later(restore, between(1200, 2200))
     }
     const restore = () => {
-      el.classList.add('glitching')
-      scrambleText(el, 'bit', 450)
-      setTimeout(() => el.classList.remove('glitching'), 450)
-      schedule(glitch, 4000, 10000)
+      swap(word, 450)
+      later(glitch, between(4000, 10000))
     }
-    schedule(glitch, 3000, 7000)
-    return () => clearTimeout(timer)
-  }, [])
-  return <span ref={ref} className="bit-glitch">bit</span>
+    later(glitch, between(firstMin, firstMax))
+    return () => { io?.disconnect(); timers.forEach(clearTimeout) }
+  }, [word, variants, introDelay, firstMin, firstMax])
+  return <span ref={ref} className={`glitch-word ${className}`}>{word}</span>
+}
+
+const BIT_VARIANTS = ['0', '1']
+export function BitGlitch() {
+  return <GlitchWord word="bit" variants={BIT_VARIANTS} />
+}
+
+// === Number that "decodes" from random digits into its final value ===
+export function DecodeCounter({ value, duration = 1400 }) {
+  const ref = useRef(null)
+  const [text, setText] = useState(() => value.replace(/[0-9]/g, '0'))
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (prefersReducedMotion()) { setText(value); return }
+    let raf
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return
+      io.disconnect()
+      const chars = [...value]
+      // each character locks in at a staggered time, left to right
+      const lockAt = chars.map((_, i) => duration * (0.35 + 0.65 * (i + 1) / chars.length))
+      const start = performance.now()
+      const tick = (now) => {
+        const t = now - start
+        setText(chars.map((c, i) => (t >= lockAt[i] || !/[0-9]/.test(c)) ? c : String(Math.floor(Math.random() * 10))).join(''))
+        if (t < duration) raf = requestAnimationFrame(tick)
+        else setText(value)
+      }
+      raf = requestAnimationFrame(tick)
+    }, { threshold: 0.4 })
+    io.observe(el)
+    return () => { io.disconnect(); cancelAnimationFrame(raf) }
+  }, [value, duration])
+  return <span ref={ref} className="decode-counter">{text}</span>
+}
+
+// === Photo that dissolves into 0s and 1s on hover, then rebuilds ===
+export function useBinaryRain(containerRef, imgRef, { cell = 9, duration = 1700 } = {}) {
+  useEffect(() => {
+    const box = containerRef.current, img = imgRef.current
+    if (!box || !img || prefersReducedMotion()) return
+    const canvas = document.createElement('canvas')
+    canvas.className = 'binary-rain'
+    box.appendChild(canvas)
+    const ctx = canvas.getContext('2d')
+    let raf = null, cols = 0, rows = 0, grid = null, noise = null, dpr = 1
+
+    // sample the photo (object-fit: cover, object-position: top) onto the cell grid
+    const sample = () => {
+      const w = box.clientWidth, h = box.clientHeight
+      dpr = window.devicePixelRatio || 1
+      canvas.width = w * dpr; canvas.height = h * dpr
+      cols = Math.ceil(w / cell); rows = Math.ceil(h / cell)
+      const off = document.createElement('canvas')
+      off.width = cols; off.height = rows
+      const octx = off.getContext('2d', { willReadFrequently: true })
+      const scale = Math.max(cols / img.naturalWidth, rows / img.naturalHeight)
+      const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale
+      octx.drawImage(img, (cols - dw) / 2, 0, dw, dh)
+      const data = octx.getImageData(0, 0, cols, rows).data
+      grid = new Float32Array(cols * rows)
+      noise = new Float32Array(cols * rows)
+      for (let i = 0; i < cols * rows; i++) {
+        const a = data[i * 4 + 3] / 255
+        const lum = (0.2126 * data[i * 4] + 0.7152 * data[i * 4 + 1] + 0.0722 * data[i * 4 + 2]) / 255
+        grid[i] = a < 0.15 ? -1 : 0.25 + 0.75 * lum
+        // dissolve from the top down, with some randomness per cell
+        noise[i] = 0.6 * Math.random() + 0.4 * (Math.floor(i / cols) / rows)
+      }
+    }
+
+    const run = () => {
+      if (raf !== null || !img.complete || !img.naturalWidth) return
+      sample()
+      const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
+      const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()
+      const start = performance.now()
+      const frame = (now) => {
+        const t = Math.min(1, (now - start) / duration)
+        const amount = Math.sin(Math.PI * t) * 1.15 // 0 → >1 → 0: dissolve fully, then rebuild
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.font = `${cell}px 'JetBrains Mono', monospace`
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const i = y * cols + x
+            if (grid[i] < 0 || noise[i] > amount) continue
+            ctx.globalAlpha = 1
+            ctx.fillStyle = bg
+            ctx.fillRect(x * cell, y * cell, cell, cell)
+            ctx.globalAlpha = grid[i]
+            ctx.fillStyle = accent
+            ctx.fillText(Math.random() < 0.5 ? '0' : '1', x * cell + cell / 2, y * cell + cell / 2)
+          }
+        }
+        if (t < 1) raf = requestAnimationFrame(frame)
+        else { ctx.clearRect(0, 0, canvas.width, canvas.height); raf = null }
+      }
+      raf = requestAnimationFrame(frame)
+    }
+    box.addEventListener('mouseenter', run)
+    return () => {
+      box.removeEventListener('mouseenter', run)
+      if (raf !== null) cancelAnimationFrame(raf)
+      canvas.remove()
+    }
+  }, [containerRef, imgRef, cell, duration])
 }
 
 // === Hero spotlight ===

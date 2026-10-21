@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
+import { SecretTerminal } from './Terminal.jsx'
+import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, GlitchWord, DecodeCounter, useBinaryRain, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
 
@@ -177,32 +178,10 @@ const ICON_TEXT_MAP = {
 }
 
 
-function Counter({ to, suffix = '', duration = 1400 }) {
-  const ref = useRef(null)
-  const [val, setVal] = useState(0)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return
-      io.unobserve(el)
-      const start = performance.now()
-      const tick = (now) => {
-        const t = Math.min(1, (now - start) / duration)
-        const eased = 1 - Math.pow(1 - t, 3)
-        setVal(Math.round(to * eased))
-        if (t < 1) requestAnimationFrame(tick)
-      }
-      requestAnimationFrame(tick)
-    }, { threshold: 0.4 })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [to, duration])
-  return <span ref={ref}>{val}{suffix}</span>
-}
-
 function PhotoCard() {
   const ref = useRef(null)
+  const imgRef = useRef(null)
+  useBinaryRain(ref, imgRef)
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -235,7 +214,7 @@ function PhotoCard() {
       <span className="corner tr"></span>
       <span className="corner bl"></span>
       <span className="corner br"></span>
-      <img src={`${import.meta.env.BASE_URL}assets/philipp.png`} alt="Philipp Staudinger" />
+      <img ref={imgRef} src={asset('philipp.png')} alt="Philipp Staudinger" />
       <div className="photo-meta">
         <span>P. STAUDINGER · 2005</span>
         <span className="accent">● 21</span>
@@ -267,6 +246,8 @@ function useScrollIndicators() {
   return { progress, active }
 }
 
+const AI_VARIANTS = ['A1.', '∆I.', '01.', 'Λ1.']
+
 function Hero() {
   return (
     <section className="hero shell" id="intro">
@@ -286,7 +267,7 @@ function Hero() {
         </div>
         <h1 className="hero-title">
           <span className="line"><span className="word delay-1"><ScrambleOnView delay={300}>Code.</ScrambleOnView></span></span>
-          <span className="line"><span className="word delay-2"><ScrambleOnView delay={600}>Software. <em>AI.</em></ScrambleOnView></span></span>
+          <span className="line"><span className="word delay-2"><ScrambleOnView delay={600}>Software.</ScrambleOnView> <em><GlitchWord word="AI." variants={AI_VARIANTS} introDelay={600} firstMin={5000} firstMax={9000} /></em></span></span>
         </h1>
       </div>
       <div className="hero-meta">
@@ -355,9 +336,9 @@ function About() {
             </a>
           </Reveal>
           <Reveal as="div" className="about-stats" delay={400}>
-            <div className="stat"><div className="num"><Counter to={3} suffix="" /></div><div className="lbl">Years studying CS</div></div>
-            <div className="stat"><div className="num"><Counter to={2} /></div><div className="lbl">Active projects</div></div>
-            <div className="stat"><div className="num"><Counter to={100} suffix="k+" /></div><div className="lbl">Lines of code</div></div>
+            <div className="stat"><div className="num"><DecodeCounter value="3" /></div><div className="lbl">Years studying CS</div></div>
+            <div className="stat"><div className="num"><DecodeCounter value="2" /></div><div className="lbl">Active projects</div></div>
+            <div className="stat"><div className="num"><DecodeCounter value="100k+" /></div><div className="lbl">Lines of code</div></div>
           </Reveal>
 
         </div>
@@ -594,6 +575,7 @@ export default function App() {
       <Projects />
       <Skills />
       <Contact />
+      <SecretTerminal projects={PROJECTS} skills={SKILLS} />
 
       <footer className="footer shell">
         <span>© 2026 — PHILIPP STAUDINGER</span>
