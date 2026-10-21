@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
+import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const PROJECTS = [
   {
@@ -14,33 +14,43 @@ const PROJECTS = [
   },
   {
     num: '02',
+    name: 'Location Based Service',
+    sub: 'Map Explorer PWA',
+    role: 'Web / Mobile',
+    tags: ['React', 'Leaflet', 'PWA'],
+    year: '2026',
+    preview: `${import.meta.env.BASE_URL}assets/preview-location-based-service.png`,
+    link: 'https://philippsnr.github.io/location-based-service/',
+  },
+  {
+    num: '03',
     name: 'ANNA',
     sub: 'AI Vision System',
     role: 'Deep Learning',
     tags: ['Python', 'Deep Learning', 'Image Processing'],
     year: '2025–26',
     preview: null,
-    link: 'https://github.com/philippsnr',
+    link: null,
   },
   {
-    num: '03',
+    num: '04',
     name: 'Fitness Tracker',
     sub: 'Android App',
     role: 'Mobile / Java',
     tags: ['Java', 'Android', 'SQLite'],
     year: '2025',
     preview: `${import.meta.env.BASE_URL}assets/preview-fitness-tracker.png`,
-    link: 'https://github.com/philippsnr',
+    link: 'https://github.com/philippsnr/Fitness-Tracker',
   },
   {
-    num: '04',
+    num: '05',
     name: 'Advance Wars',
     sub: 'Turn-Based Strategy Game',
     role: 'Game Dev / Java',
     tags: ['Java', 'OOP', 'Game Design'],
     year: '2024',
     preview: null,
-    link: 'https://github.com/philippsnr',
+    link: 'https://github.com/philippsnr/AdvanceWars',
   },
 ]
 
@@ -264,7 +274,7 @@ function About() {
     <section className="section shell" id="about">
       <Reveal as="div" className="section-header">
         <div className="index">02 / About</div>
-        <h2 className="title">A bit about <em>me.</em></h2>
+        <h2 className="title">A <BitGlitch /> about <em>me.</em></h2>
         <div className="meta">OTH REGENSBURG · NFACULTY<br/>REGENSBURG · DE</div>
       </Reveal>
 
@@ -279,6 +289,23 @@ function About() {
           <Reveal delay={200}><p>
             Before that, I completed my B.Sc. in Intelligent Systems at DHBW Ravensburg in a dual programme with Rolls-Royce Solutions — finishing with an AI vision system for industrial piston inspection as my bachelor thesis. My work sits between machine learning, computer vision, data and backend engineering.
           </p></Reveal>
+          <Reveal as="div" className="affiliations" delay={300}>
+            <a className="affil-card" href="https://www.oth-regensburg.de" target="_blank" rel="noreferrer">
+              <span className="affil-lbl">Studying at</span>
+              <span className="affil-logo oth-mark" aria-label="OTH Regensburg">
+                <span className="oth-letters">OTH</span>
+                <span className="oth-city">Regensburg</span>
+              </span>
+              <span className="affil-sub">M.Sc. Computer Science · AI & Data Science</span>
+            </a>
+            <a className="affil-card" href="https://nfaculty.com" target="_blank" rel="noreferrer">
+              <span className="affil-lbl">Working at</span>
+              <span className="affil-logo">
+                <img src={`${import.meta.env.BASE_URL}assets/logo-nfaculty.svg`} alt="nfaculty" />
+              </span>
+              <span className="affil-sub">Working Student</span>
+            </a>
+          </Reveal>
           <Reveal as="div" className="about-stats" delay={400}>
             <div className="stat"><div className="num"><Counter to={3} suffix="" /></div><div className="lbl">Years studying CS</div></div>
             <div className="stat"><div className="num"><Counter to={2} /></div><div className="lbl">Active projects</div></div>
@@ -305,7 +332,7 @@ function Projects() {
       <Reveal as="div" className="section-header">
         <div className="index">03 / Selected Work</div>
         <h2 className="title">Things I'm <em>building.</em></h2>
-        <div className="meta">2023 — 2026<br/>04 PROJECTS</div>
+        <div className="meta">2023 — 2026<br/>05 PROJECTS</div>
       </Reveal>
 
       <div className="project-list">
@@ -313,7 +340,7 @@ function Projects() {
           <Reveal key={p.num} delay={i * 60}>
             <a
               className="project-row"
-              href={p.link || '#'}
+              href={p.link || undefined}
               target={p.link ? '_blank' : undefined}
               rel={p.link ? 'noreferrer' : undefined}
               onMouseEnter={() => setHover(i)}
@@ -323,7 +350,7 @@ function Projects() {
               <span className="name">{p.name}<em>— {p.sub}</em></span>
               <span className="role">{p.role}</span>
               <span className="tags">{p.tags.map(t => <span key={t}>{t}</span>)}</span>
-              <span className="year">{p.year} ↗</span>
+              <span className="year">{p.year}{p.link ? ' ↗' : ''}</span>
             </a>
           </Reveal>
         ))}

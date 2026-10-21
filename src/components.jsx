@@ -176,6 +176,37 @@ export function ScrambleOnView({ children, className = '', delay = 0, as: Tag = 
   return <Tag ref={ref} className={className}>{children}</Tag>
 }
 
+// === "bit" that occasionally glitches into a 0 or 1 ===
+export function BitGlitch() {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // lock the width (in em, so it follows the responsive font size) once fonts are loaded
+    document.fonts.ready.then(() => {
+      el.style.width = `${el.offsetWidth / parseFloat(getComputedStyle(el).fontSize)}em`
+    })
+    let timer
+    const schedule = (fn, min, max) => { timer = setTimeout(fn, min + Math.random() * (max - min)) }
+    const glitch = () => {
+      el.classList.add('glitching')
+      scrambleText(el, Math.random() < 0.5 ? '0' : '1', 350)
+      setTimeout(() => el.classList.remove('glitching'), 350)
+      schedule(restore, 1200, 2200)
+    }
+    const restore = () => {
+      el.classList.add('glitching')
+      scrambleText(el, 'bit', 450)
+      setTimeout(() => el.classList.remove('glitching'), 450)
+      schedule(glitch, 4000, 10000)
+    }
+    schedule(glitch, 3000, 7000)
+    return () => clearTimeout(timer)
+  }, [])
+  return <span ref={ref} className="bit-glitch">bit</span>
+}
+
 // === Hero spotlight ===
 export function HeroSpotlight() {
   const ref = useRef(null)

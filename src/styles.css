@@ -1342,3 +1342,78 @@ i.devicon-pandas-plain.colored { color: var(--text) !important; }
   .project-row .name em { font-size: 17px; }
   .status-strip { display: none; }
 }
+
+/* === "bit" glitch === */
+.bit-glitch {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+}
+.bit-glitch.glitching {
+  color: var(--accent);
+  animation: bit-slip 0.35s steps(2) both;
+}
+@keyframes bit-slip {
+  0%   { transform: translate(0, 0) skewX(0); text-shadow: none; }
+  25%  { transform: translate(-3px, 1px) skewX(-12deg); text-shadow: 3px 0 oklch(0.7 0.2 25), -3px 0 oklch(0.75 0.15 220); }
+  50%  { transform: translate(4px, -2px) skewX(10deg); text-shadow: -2px 0 oklch(0.7 0.2 25), 2px 0 oklch(0.75 0.15 220); }
+  75%  { transform: translate(-1px, 0) skewX(-4deg); }
+  100% { transform: translate(0, 0) skewX(0); text-shadow: none; }
+}
+
+/* === Affiliations (OTH / nfaculty) === */
+.affiliations {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+}
+@media (max-width: 540px) {
+  .affiliations { grid-template-columns: 1fr; }
+}
+.affil-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.3s, background 0.3s, transform 0.4s var(--ease-out);
+}
+.affil-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-elev-2);
+  transform: translateY(-2px);
+}
+.affil-lbl, .affil-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.affil-sub { text-transform: none; letter-spacing: 0.02em; }
+.affil-logo {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+.affil-logo img { height: 100%; width: auto; }
+.oth-mark { gap: 10px; }
+.oth-letters {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.oth-city {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+  line-height: 1.1;
+}
