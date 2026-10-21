@@ -68,6 +68,8 @@ const SKILLS = [
     { name: 'OpenShift', lvl: 'Comfortable', icon: null, iconText: 'OS' },
     { name: 'Azure DevOps', lvl: 'Comfortable', icon: 'devicon-azuredevops-plain' },
     { name: 'GitHub Actions', lvl: 'Comfortable', icon: 'devicon-github-plain' },
+    { name: 'Vercel', lvl: 'Comfortable', icon: 'devicon-vercel-original' },
+    { name: 'Cloudways', lvl: 'Comfortable', icon: null, iconText: 'CW' },
   ]},
   { cat: 'Tools', items: [
     { name: 'Git', lvl: 'Daily', icon: 'devicon-git-plain' },
@@ -98,6 +100,8 @@ const ICON_MAP = {
   'OpenShift': null,
   'Azure DevOps': 'devicon-azuredevops-plain',
   'GitHub Actions': 'devicon-github-plain',
+  'Vercel': 'devicon-vercel-original',
+  'Cloudways': null,
   'Git': 'devicon-git-plain',
   'Linux': 'devicon-linux-plain',
   'Bash': 'devicon-bash-plain',
@@ -111,6 +115,7 @@ const ICON_MAP = {
 const ICON_TEXT_MAP = {
   'OpenShift': 'OS',
   'Ollama': 'OL',
+  'Cloudways': 'CW',
 }
 
 
@@ -218,7 +223,7 @@ function Hero() {
           </div>
           <div className="hero-tagline">
             <span className="tag-label">— Short version</span>
-            <p>CS student in <em>Friedrichshafen</em>. Specializing in <em>Intelligent Systems</em>: machine learning, computer vision, and backend engineering.</p>
+            <p>M.Sc. Computer Science student focusing on <em>AI & Data Science</em>: machine learning, computer vision, and backend engineering.</p>
           </div>
         </div>
         <h1 className="hero-title">
@@ -229,7 +234,7 @@ function Hero() {
       <div className="hero-meta">
         <div className="cell">
           <div className="cell-label">Currently</div>
-          <div className="cell-value">Dual Student in Software Engineering & AI at Rolls-Royce Solutions, alongside a B.Sc. at DHBW Ravensburg.</div>
+          <div className="cell-value">Working Student at nfaculty GmbH, alongside an M.Sc. in Computer Science (AI & Data Science).</div>
         </div>
         <div className="cell">
           <div className="cell-label">Based in</div>
@@ -260,7 +265,7 @@ function About() {
       <Reveal as="div" className="section-header">
         <div className="index">02 / About</div>
         <h2 className="title">A bit about <em>me.</em></h2>
-        <div className="meta">DHBW · ROLLS-ROYCE<br/>FRIEDRICHSHAFEN · DE</div>
+        <div className="meta">M.SC. CS · NFACULTY<br/>FRIEDRICHSHAFEN · DE</div>
       </Reveal>
 
       <div className="about-grid">
@@ -269,10 +274,10 @@ function About() {
         <div className="about-copy">
           <Reveal as="h3">— Background</Reveal>
           <Reveal delay={100}><p>
-            I'm <em>Philipp</em>, a CS student specializing in <em>Intelligent Systems</em> at DHBW Ravensburg, paired with a dual programme at Rolls-Royce Solutions in Friedrichshafen.
+            I'm <em>Philipp</em>, a Master's student in Computer Science specializing in <em>AI & Data Science</em>, working alongside my studies as a working student at <em>nfaculty GmbH</em>.
           </p></Reveal>
           <Reveal delay={200}><p>
-            My work sits between machine learning, computer vision and backend engineering — currently building an AI vision system for industrial piston inspection as my bachelor thesis.
+            Before that, I completed my B.Sc. in Intelligent Systems at DHBW Ravensburg in a dual programme with Rolls-Royce Solutions — finishing with an AI vision system for industrial piston inspection as my bachelor thesis. My work sits between machine learning, computer vision, data and backend engineering.
           </p></Reveal>
           <Reveal as="div" className="about-stats" delay={400}>
             <div className="stat"><div className="num"><Counter to={3} suffix="" /></div><div className="lbl">Years studying CS</div></div>
@@ -346,14 +351,14 @@ function Projects() {
 }
 
 function Skills() {
-  const tags = ['Python', 'Java', 'JavaScript', 'PHP', 'HTML', 'CSS', 'PyTorch', 'TensorFlow', 'OpenCV', 'NumPy', 'Pandas', 'Jupyter', 'Docker', 'Kubernetes', 'Rancher', 'OpenShift', 'Azure DevOps', 'GitHub Actions', 'Git', 'Linux', 'Bash', 'MySQL', 'Android Studio', 'Ollama', 'Laravel', 'MariaDB']
+  const tags = ['Python', 'Java', 'JavaScript', 'PHP', 'HTML', 'CSS', 'PyTorch', 'TensorFlow', 'OpenCV', 'NumPy', 'Pandas', 'Jupyter', 'Docker', 'Kubernetes', 'Rancher', 'OpenShift', 'Azure DevOps', 'GitHub Actions', 'Vercel', 'Cloudways', 'Git', 'Linux', 'Bash', 'MySQL', 'Android Studio', 'Ollama', 'Laravel', 'MariaDB']
   const items = [...tags, ...tags]
   return (
     <section className="section shell" id="stack">
       <Reveal as="div" className="section-header">
         <div className="index">04 / Stack</div>
         <h2 className="title">What I <em>work with.</em></h2>
-        <div className="meta">UPDATED · 05.26</div>
+        <div className="meta">UPDATED · 10.26</div>
       </Reveal>
 
       <Reveal as="div" className="skills-grid">
