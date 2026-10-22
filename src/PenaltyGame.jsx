@@ -163,11 +163,11 @@ function Shootout({ onClose }) {
       : r < 0.12
         ? { x: rand(260, 540), y: rand(92, 108) } // over the bar
         : clampToGoal({ x: Math.random() < 0.75 ? (Math.random() < 0.5 ? rand(240, 320) : rand(480, 560)) : rand(330, 470), y: rand(140, 300) }, 14, 14)
-    const warn = Math.max(520, 950 - g.kicks * 45)
+    const warn = Math.max(340, 640 - g.kicks * 40)
     g.tele = { target, start: performance.now(), dur: warn }
     setPhase('keep')
     later(() => {
-      g.shot = { from: { ...SPOT }, to: target, start: performance.now(), dur: 620, by: 'cpu' }
+      g.shot = { from: { ...SPOT }, to: target, start: performance.now(), dur: 520, by: 'cpu' }
     }, warn)
   }, [])
 
@@ -194,7 +194,8 @@ function Shootout({ onClose }) {
   useEffect(() => {
     if (!['aimX', 'aimY', 'shot', 'keep', 'banner'].includes(phase)) return
     let raf
-    const speed = 1 + g.kicks * 0.06
+    // every penalty makes the crosshair swing noticeably faster
+    const speed = Math.min(2.4, 1 + g.kicks * 0.15)
     const frame = (now) => {
       const t = (now - g.t0) / 1000
       if (phase === 'aimX') g.aim = { x: AIM_X.mid + Math.sin(t * 2.6 * speed) * AIM_X.amp, y: AIM_Y.mid }
@@ -209,7 +210,7 @@ function Shootout({ onClose }) {
           r: s.after ? 8 : lerp(14, 8, e),
         }
         if (p >= 1 && !s.after) {
-          const reach = s.by === 'you' ? 58 : (g.dove ? 64 : 46)
+          const reach = s.by === 'you' ? 58 : (g.dove ? 50 : 36)
           const result = outcome(s.to, g.hands || STANDING, reach)
           g.tele = null
           // after the moment of truth: into the net, off a glove, or away
