@@ -202,6 +202,8 @@ function Snake({ onExit }) {
   )
 }
 
+export const openTerminal = (cmd) => window.dispatchEvent(new CustomEvent('ps-terminal', { detail: { cmd } }))
+
 export function SecretTerminal({ projects, skills }) {
   const [open, setOpen] = useState(false)
   const [lines, setLines] = useState(BANNER)
@@ -237,6 +239,18 @@ export function SecretTerminal({ projects, skills }) {
     console.log('%c psst… type "sudo hire philipp" anywhere on the page.', 'color:#a3e635;font-family:monospace')
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  // opened from the nav button or the secrets counter, optionally running a command
+  useEffect(() => {
+    const onOpen = (e) => {
+      setOpen(true)
+      unlock('terminal')
+      const cmd = e.detail?.cmd
+      if (cmd) setLines(l => [...l, `${PROMPT} ${cmd}`, ...runCommand(cmd, { projects, skills }).lines])
+    }
+    window.addEventListener('ps-terminal', onOpen)
+    return () => window.removeEventListener('ps-terminal', onOpen)
+  }, [projects, skills])
 
   useEffect(() => {
     if (!open || playing) return

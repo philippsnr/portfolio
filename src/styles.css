@@ -2218,3 +2218,53 @@ html.golden .scroll-progress { background: var(--gold); }
 @media (prefers-reduced-motion: reduce) {
   .pk-keeper.idle, .as-trophy, .as-panel, .pk-banner { animation: none; }
 }
+
+/* === Terminal entry points: nav button and secrets counter === */
+.nav-right { display: flex; align-items: center; gap: 28px; }
+.nav-term {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-term:hover { color: var(--accent); }
+.nav-term .caret { animation: caret-blink 1s steps(1) infinite; }
+@keyframes caret-blink { 50% { opacity: 0; } }
+@media (max-width: 720px) {
+  .nav-right { gap: 14px; }
+}
+.status-strip .secrets-count {
+  pointer-events: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  transition: color 0.2s;
+}
+.status-strip .secrets-count:hover { color: #fff; }
+html.golden .status-strip .secrets-count { color: var(--gold); }
+@media (prefers-reduced-motion: reduce) {
+  .nav-term .caret { animation: none; }
+}
+.nav-mobile-overlay .mobile-secrets {
+  margin-top: 28px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+html.golden .nav-mobile-overlay .mobile-secrets { color: var(--gold); }

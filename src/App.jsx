@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { SecretTerminal } from './Terminal.jsx'
+import { SecretTerminal, openTerminal } from './Terminal.jsx'
 import { PenaltyGame } from './PenaltyGame.jsx'
-import { Achievements, MatrixRain, GoalCelebration, RedCard, Formation, LightsOff, Gravity, AllSecretsCelebration, startMatrix, toggleLights, unlock, allSecretsFound } from './easterEggs.jsx'
+import { Achievements, MatrixRain, GoalCelebration, RedCard, Formation, LightsOff, Gravity, AllSecretsCelebration, startMatrix, toggleLights, unlock, allSecretsFound, foundSecrets, SECRET_COUNT } from './easterEggs.jsx'
 import { Cursor, Magnetic, Reveal, BgGlow, Clock, makeAscii, ScrambleOnView, BitGlitch, GlitchWord, DecodeCounter, useBinaryRain, HeroSpotlight, GridBg, NowStatus, SkillBar, LVL_MAP, ParticleNet } from './components.jsx'
 
 const asset = (f) => `${import.meta.env.BASE_URL}assets/${f}`
@@ -562,8 +562,9 @@ export default function App() {
   const { progress, active } = useScrollIndicators()
   const [menuOpen, setMenuOpen] = useState(false)
   const [golden, setGolden] = useState(() => allSecretsFound())
+  const [secretsFound, setSecretsFound] = useState(() => foundSecrets().length)
   useEffect(() => {
-    const onUnlock = () => setGolden(allSecretsFound())
+    const onUnlock = () => { setGolden(allSecretsFound()); setSecretsFound(foundSecrets().length) }
     window.addEventListener('ps-achievement', onUnlock)
     return () => window.removeEventListener('ps-achievement', onUnlock)
   }, [])
@@ -597,18 +598,23 @@ export default function App() {
           <span className="dot"></span>
           <span>P.STAUDINGER / DEV</span>
         </div>
-        <div className="nav-links">
-          {NAV_ITEMS.map(([id, label]) => (
-            <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{label}</a>
-          ))}
+        <div className="nav-right">
+          <div className="nav-links">
+            {NAV_ITEMS.map(([id, label]) => (
+              <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{label}</a>
+            ))}
+          </div>
+          <button type="button" className="nav-term" onClick={() => { setMenuOpen(false); openTerminal() }} aria-label="Open terminal" title="Open terminal">
+            &gt;<span className="caret">_</span>
+          </button>
+          <button
+            className={`nav-hamburger${menuOpen ? ' open' : ''}`}
+            onClick={() => setMenuOpen(v => !v)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          >
+            <span></span><span></span><span></span>
+          </button>
         </div>
-        <button
-          className={`nav-hamburger${menuOpen ? ' open' : ''}`}
-          onClick={() => setMenuOpen(v => !v)}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-        >
-          <span></span><span></span><span></span>
-        </button>
       </nav>
 
       <div className={`nav-mobile-overlay${menuOpen ? ' open' : ''}`}>
@@ -617,6 +623,9 @@ export default function App() {
             {label}
           </a>
         ))}
+        <button type="button" className="mobile-secrets" onClick={() => { setMenuOpen(false); openTerminal('secrets') }}>
+          ◇ {secretsFound}/{SECRET_COUNT} secrets found
+        </button>
       </div>
 
       <Hero />
@@ -644,7 +653,9 @@ export default function App() {
       <div className="status-strip">
         <span className="live" onClick={onDotClick}><NowStatus /></span>
         <span>SECTION · {active.toUpperCase()}</span>
-        <span>{Math.round(progress * 100)}% scrolled</span>
+        <button type="button" className="secrets-count" onClick={() => openTerminal('secrets')} title="Open the terminal">
+          ◇ {secretsFound}/{SECRET_COUNT} secrets found
+        </button>
       </div>
     </>
   )
